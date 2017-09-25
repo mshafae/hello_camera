@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <sys/time.h>
+#include <cassert>
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -127,18 +128,13 @@ public:
   Camera( ){ };
 
   Camera(glm::vec3 position, glm::vec3 up, glm::vec3 la):_rotationDelta(0.05), eyePosition(position), upVector(up), lookAt(la){
-    /*glm::vec3 gaze = lookAt - eyePosition;
-    if (glm::length(gaze) > 1.0){
-      std::cerr << "woops" << std::endl;
-      debug( );
-      lookAt = eyePosition + glm::normalize(gaze);
-      debug( );
-    }*/
   }
   ~Camera( ){}
 
   glm::vec3 gaze( ){
-    return (lookAt - eyePosition) / glm::length(lookAt - eyePosition);
+    // this will fail miserably if gaze is a zero length vector.
+    glm::vec3 gaze = glm::normalize(lookAt - eyePosition);
+    return gaze;
   }
 
   glm::vec3 right( ){
@@ -160,14 +156,23 @@ public:
   }
 
   void panLeft( ){
-    glm::vec3 axis = eyePosition + upVector;
-    glm::mat4 m = glm::rotate(_rotationDelta, axis);
-    lookAt = m * glm::vec4(lookAt, 1.0);
-    debug( );
+    // move everything to the origin
+    glm::vec3 __lookAt = lookAt - eyePosition;
+    // transform
+    glm::mat4 m = glm::rotate(_rotationDelta, upVector);
+    __lookAt = m * glm::vec4(__lookAt, 1.0);
+    // Move everything back
+    lookAt = __lookAt + eyePosition;
   }
 
   void panRight( ){
-
+    // move everything to the origin
+    glm::vec3 __lookAt = lookAt - eyePosition;
+    // transform
+    glm::mat4 m = glm::rotate(-_rotationDelta, upVector);
+    __lookAt = m * glm::vec4(__lookAt, 1.0);
+    // Move everything back
+    lookAt = __lookAt + eyePosition;
   }
 
   void rotateCameraLeft( ){
