@@ -1,0 +1,12 @@
+set -e; c++ -MM -DNOTEXTURE -g -Wall -pedantic -pipe -std=c++11 -I ../TitanOpenGLKit/TitanOpenGLKit_osx/include hello_glsl.cpp \
+	| sed 's/(hello_glsl).o[ :]*/.o hello_glsl.d : /g' > hello_glsl.d; \
+	[ -s hello_glsl.d ] || rm -f hello_glsl.d
+c++ -DNOTEXTURE -g -Wall -pedantic -pipe -std=c++11 -I ../TitanOpenGLKit/TitanOpenGLKit_osx/include -c hello_glsl.cpp
+hello_glsl.cpp:145:26: error: no member named 'xyz' in 'glm::tvec3<float, glm::precision::packed_highp>'
+    lookAt = eyePosition.xyz + gaze( );
+             ~~~~~~~~~~~ ^
+hello_glsl.cpp:150:15: warning: unused variable 'm' [-Wunused-variable]
+    glm::mat4 m = glm::translate(g * -_rotationDelta);
+              ^
+1 warning and 1 error generated.
+make: *** [hello_glsl.o] Error 1
