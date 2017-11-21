@@ -12,6 +12,9 @@
 #include <sys/time.h>
 #include <cassert>
 
+#include "Camera.h"
+#include "SpinningLight.h"
+
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
